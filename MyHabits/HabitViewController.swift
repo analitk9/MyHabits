@@ -12,6 +12,8 @@ class HabitViewController: UIViewController {
     // MARK: - Init`s
     
     var habit: Habit!
+    var curHabit: Habit!
+    
     var isNew: Bool = true
     
     let colorPicker = UIColorPickerViewController()
@@ -27,7 +29,7 @@ class HabitViewController: UIViewController {
         let textFieald = UITextField()
         textFieald.translatesAutoresizingMaskIntoConstraints = false
         textFieald.placeholder = "Бегать по утрам, спать 8 часов и т.п."
-        textFieald.textColor = .blue
+        textFieald.textColor = .black
         textFieald.returnKeyType = .done
         return textFieald
     }()
@@ -79,9 +81,11 @@ class HabitViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         if let habit = habit {
             self.habit = habit
+            curHabit = Habit(name: habit.name, date: habit.date, color: habit.color)
+            curHabit.trackDates = habit.trackDates
             isNew = false
         }else {
-            self.habit = Habit(name: "", date: Date(), color: .black)
+            curHabit = Habit(name: "", date: Date(), color: .black)
             
         }
         configureModel()
@@ -102,13 +106,14 @@ class HabitViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         [
             namelabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             namelabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 21),
             
             nameHabit.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             nameHabit.topAnchor.constraint(equalTo: namelabel.bottomAnchor, constant: 7),
-            nameHabit.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -65),
+            nameHabit.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
             colorLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             colorLabel.topAnchor.constraint(equalTo: nameHabit.bottomAnchor, constant: 15),
@@ -138,10 +143,10 @@ class HabitViewController: UIViewController {
     
     func configureModel(){
         
-        nameHabit.text = habit.name
-        colorView.tintColor = habit.color
+        nameHabit.text = curHabit.name
+        colorView.tintColor = curHabit.color
         
-        dateLabel.attributedText = createAttributeString(from: habit.dateString)
+        dateLabel.attributedText = createAttributeString(from: curHabit.dateString)
         
         deleteButton.isHidden = isNew
     }
@@ -155,7 +160,7 @@ class HabitViewController: UIViewController {
         
         nameHabit.delegate = self
         nameHabit.addTarget(self, action: #selector(namehabitChanged), for: .editingChanged)
-        
+        nameHabit.textColor = curHabit.color
         colorView.isUserInteractionEnabled = true
         let touch = UITapGestureRecognizer(target: self, action: #selector(tapColorView))
         colorView.addGestureRecognizer(touch)
@@ -170,9 +175,9 @@ class HabitViewController: UIViewController {
     
     func configNavigateBar(){
         
-        navigationItem.title = "Создать"
+        navigationItem.title = curHabit.name
         navigationController?.navigationBar.prefersLargeTitles = false
-        navigationController?.navigationBar.tintColor = UIColor(named: "purpuleColor")
+        navigationController?.navigationBar.tintColor = UIColor(named: "purpleColor")
         
         let rightSaveButton = UIBarButtonItem(title: "Сохранить", style: .plain, target: self, action: #selector(saveNewHabit))
         rightSaveButton.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.systemFont(ofSize: 17, weight: .semibold)], for: .normal)
@@ -191,7 +196,7 @@ class HabitViewController: UIViewController {
         let secondPhrase = stringArray.dropFirst(3).joined()
         let attributesFont = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: .regular)]
         result = NSMutableAttributedString(string: firstPhrase+" ",attributes: attributesFont)
-        let attributesColor = [NSAttributedString.Key.foregroundColor: UIColor(named: "purpuleColor") ?? UIColor.black]
+        let attributesColor = [NSAttributedString.Key.foregroundColor: UIColor(named: "purpleColor") ?? UIColor.black]
         result.append(NSAttributedString(string: "\(secondPhrase)", attributes: attributesColor))
         
         return result
@@ -201,31 +206,32 @@ class HabitViewController: UIViewController {
     
     @objc func saveNewHabit(){
         guard nameHabit.text != nil else {return}
-        if let inxdHabit = HabitsStore.shared.habits.firstIndex(of: habit){
-            HabitsStore.shared.habits[inxdHabit] = habit
+        
+        if let habit = habit, let inxdHabit = HabitsStore.shared.habits.firstIndex(of: habit){
+            HabitsStore.shared.habits[inxdHabit] = curHabit
         }else{
-            HabitsStore.shared.habits.append(habit)
-            
+            HabitsStore.shared.habits.append(curHabit)
         }
         backToHabitsVC()
     }
     
     
     @objc func selectDate(_ sender: UIDatePicker){
-        habit?.date = sender.date
-        dateLabel.attributedText = createAttributeString(from: habit.dateString)
+        curHabit.date = sender.date
+        dateLabel.attributedText = createAttributeString(from: curHabit.dateString)
     }
     
     @objc func tapDelButton(){
-        let nameHabit = habit.name
+        let nameHabit = curHabit.name
         let msgtext = "Вы точно хотите удалить \(nameHabit) ?"
         let alert = UIAlertController(title: "Удалить привычку", message: msgtext, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
         alert.addAction(UIAlertAction(title: "Удалить", style: .destructive, handler: { _ in
             
             HabitsStore.shared.habits.removeAll { $0 == self.habit }
-            self.navigationController?.popToRootViewController(animated: true)
             
+            self.navigationController?.popToRootViewController(animated: true)
+            self.tabBarController?.tabBar.isHidden = false
         }))
         present(alert, animated: true, completion: nil)
     }
@@ -243,7 +249,8 @@ class HabitViewController: UIViewController {
     
     @objc func namehabitChanged(_ textField: UITextField) {
         guard let name =  textField.text else { return }
-        habit.name = name
+        
+        curHabit.name = name
         
     }
 }
@@ -258,7 +265,8 @@ extension HabitViewController: UIColorPickerViewControllerDelegate {
     
     func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
         colorView.tintColor = viewController.selectedColor
-        habit.color = viewController.selectedColor
+        curHabit.color = viewController.selectedColor
+        nameHabit.textColor = viewController.selectedColor
         
     }
     
