@@ -179,7 +179,7 @@ class HabitViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.navigationBar.tintColor = UIColor(named: "purpleColor")
         
-        let rightSaveButton = UIBarButtonItem(title: "Сохранить", style: .plain, target: self, action: #selector(saveNewHabit))
+        let rightSaveButton = UIBarButtonItem(title: "Сохранить", style: .plain, target: self, action: #selector(saveHabit))
         rightSaveButton.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.systemFont(ofSize: 17, weight: .semibold)], for: .normal)
         self.navigationItem.rightBarButtonItem = rightSaveButton
         
@@ -204,11 +204,14 @@ class HabitViewController: UIViewController {
     
     // MARK: - Event`s
     
-    @objc func saveNewHabit(){
+    @objc func saveHabit(){
         guard nameHabit.text != nil else {return}
         
         if let habit = habit, let inxdHabit = HabitsStore.shared.habits.firstIndex(of: habit){
-            HabitsStore.shared.habits[inxdHabit] = curHabit
+            let habitForSave = HabitsStore.shared.habits[inxdHabit]
+            habitForSave.name =  curHabit.name
+            habitForSave.color = curHabit.color
+            habitForSave.date = curHabit.date
         }else{
             HabitsStore.shared.habits.append(curHabit)
         }
@@ -251,7 +254,7 @@ class HabitViewController: UIViewController {
         guard let name =  textField.text else { return }
         
         curHabit.name = name
-        
+        navigationItem.title = name
     }
 }
 
@@ -280,6 +283,7 @@ extension HabitViewController: UITextFieldDelegate {
         return true
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
+        
         textField.resignFirstResponder()
     }
     
