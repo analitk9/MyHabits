@@ -140,8 +140,7 @@ extension HabitDetailView: UITableViewDataSource {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
         let curDate = habit.trackDates.reversed()[indexPath.row]
-      //  guard let indx = HabitsStore.shared.dates.firstIndex(of: curDate) else {return cell}
-        cell.textLabel?.text =   returnFormated(curDate) //HabitsStore.shared.trackDateString(forIndex: indx) //
+        cell.textLabel?.text =   returnFormated(curDate)
        
         if HabitsStore.shared.habit(habit, isTrackedIn: curDate) {
             cell.accessoryType = .checkmark
