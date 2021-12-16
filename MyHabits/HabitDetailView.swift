@@ -42,11 +42,17 @@ class HabitDetailView: UIViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         view.addSubview(tableView)
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         configNavigateBar()
+       
         
     }
     
     override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         [
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -61,7 +67,7 @@ class HabitDetailView: UIViewController {
         
         navigationItem.title = habit.name
         navigationController?.navigationBar.prefersLargeTitles = false
-        navigationController?.navigationBar.tintColor = UIColor(named: "purpuleColor")
+        navigationController?.navigationBar.tintColor = UIColor(named: "purpleColor")
         
         let rightSaveButton = UIBarButtonItem(title: "Править", style: .plain, target: self, action: #selector(tapEditButton))
         navigationItem.rightBarButtonItem = rightSaveButton
@@ -134,7 +140,8 @@ extension HabitDetailView: UITableViewDataSource {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
         let curDate = habit.trackDates.reversed()[indexPath.row]
-        cell.textLabel?.text = returnFormated(curDate)
+        cell.textLabel?.text =   returnFormated(curDate)
+       
         if HabitsStore.shared.habit(habit, isTrackedIn: curDate) {
             cell.accessoryType = .checkmark
         }

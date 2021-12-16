@@ -34,7 +34,7 @@ class HeaderView:  UICollectionViewCell{
         progressBar.translatesAutoresizingMaskIntoConstraints = false
         
         progressBar.progress = 0.0
-        progressBar.progressTintColor = UIColor(named: "purpuleColor")
+        progressBar.progressTintColor = UIColor(named: "purpleColor")
         return progressBar
     }()
     

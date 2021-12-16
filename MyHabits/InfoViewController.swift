@@ -12,11 +12,8 @@ class InfoViewController: UIViewController {
     let infoText: UITextView = {
         let infoText = UITextView()
         infoText.translatesAutoresizingMaskIntoConstraints = false
-        let font = UIFont.systemFont(ofSize: 17)
-        infoText.font = font
         infoText.textAlignment = .left
         infoText.isEditable = false
-        
         return infoText
     }()
     
@@ -41,21 +38,30 @@ class InfoViewController: UIViewController {
         var allText = AttributedString("Привычка за 21 день")
         allText.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
        
-        var addAtribString = AttributedString(createTex())
+        var addAtribString = AttributedString(createText())
         addAtribString.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         allText.append(addAtribString)
         infoText.attributedText = NSAttributedString(allText)
         infoText.textContainerInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         view.addSubview(infoText)
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        infoText.setContentOffset(.zero, animated: false)
     }
     
     override func viewWillLayoutSubviews() {
+       
+        super.viewWillLayoutSubviews()
         [
             infoText.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             infoText.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             infoText.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             infoText.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         ].forEach { $0.isActive = true }
+        
     }
     
     func configTabBar(){
@@ -66,7 +72,7 @@ class InfoViewController: UIViewController {
         tabBarItem = item
     }
     
-    func createTex()-> String {
+    func createText()-> String {
           """
         
         

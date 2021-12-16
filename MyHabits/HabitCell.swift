@@ -82,6 +82,7 @@ class HabitCell: UICollectionViewCell {
     }
     
     override func layoutSubviews() {
+        super.layoutSubviews()
         [
             nameHabitLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             nameHabitLabel.topAnchor.constraint(equalTo: contentView.topAnchor,constant: 20),
@@ -105,6 +106,7 @@ class HabitCell: UICollectionViewCell {
     }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
         nameHabitLabel.text = nil
         dateHabitLabel.text = nil
         countMakeHabitLabel.text = nil

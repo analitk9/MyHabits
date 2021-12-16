@@ -60,11 +60,14 @@ class HabitsViewController: UIViewController {
         habitsViewCollection.register(HeaderView.self, forCellWithReuseIdentifier: CellReuseID.sectionHeader.rawValue)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         habitsViewCollection.reloadData()
     }
     
+    
     override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         [
             habitsViewCollection.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             habitsViewCollection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -87,7 +90,7 @@ class HabitsViewController: UIViewController {
     func configNavigateBar(){
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addHabitPress))
         
-        navigationController?.navigationBar.tintColor = UIColor(named: "purpuleColor")
+        navigationController?.navigationBar.tintColor = UIColor(named: "purpleColor")
     }
     
     // MARK: - Events
